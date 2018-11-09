@@ -1,5 +1,4 @@
 package com.softserve.task1;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,15 +55,16 @@ public class IsPrimeChecker extends Thread {
         int countOfThreads = scanner.nextInt();
         int lastElement2 = endOfInterval / countOfThreads;
 
+
         ///////THREAD ARRAY:
         IsPrimeChecker checker[] = new IsPrimeChecker[countOfThreads];
         ///////LIST FOR THREAD DATA SAVE:
         List[] copies = new ArrayList[countOfThreads];
 
         ///////INTERVAL DISTRIBUTION:
-        for (int i = 0; i < countOfThreads; i ++){
+        for (int i = 1; i < countOfThreads; i ++){
             List<Integer> listForEvenThread = new ArrayList<>();
-            checker[i] = new IsPrimeChecker(lastElement2*i, endOfInterval,listForEvenThread);
+            checker[i] = new IsPrimeChecker(lastElement2*i,lastElement2*i + lastElement2,listForEvenThread);
             checker[i].setName("Cheker #"+i);
             copies[i] = listForEvenThread;
         }
