@@ -1,6 +1,7 @@
 package com.softserve.task3;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -20,30 +21,28 @@ public class FileReadingProcess {
 
     public synchronized void fileRead(String fileName) throws IOException {
 
-        while (fileName.equals("")){
+        while (fileName.equals("")) {
             try {
                 wait();
-            }catch (InterruptedException e){
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        FileReader read = new FileReader(fileName);
-        BufferedReader reader = new BufferedReader(read);
-        String line;
-        StringBuilder stringBuilder = new StringBuilder();
-        String ls = System.getProperty("line.separator");
+        try (FileReader read = new FileReader(fileName);
+             BufferedReader reader = new BufferedReader(read)) {
 
-        try{
-            while ((line = reader.readLine()) !=null){
-                stringBuilder.append(line);
-                stringBuilder.append(ls);
+             String line;
+             StringBuilder stringBuilder = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                    stringBuilder.append(line);
             }
-        }catch (IOException e){
-            reader.close();
-        }
 
-        nameOfFile =  stringBuilder.toString();
-        notify();
+            nameOfFile = stringBuilder.toString();
+            notify();
+        }catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public byte[] byteReceiving(){
@@ -59,23 +58,24 @@ public class FileReadingProcess {
         }
         System.out.println("Search processing....");
         byte[] contentFile = byteReceiving();
-        int k = 0;
-        int per = -1;
-        int kper = 0;
-        int max = 1;
+        int counter = 0;
+        int interrupt = -1;
+        int currentElement = 0;
+        int maxSequence = 1;
         for (int i = 1; i < contentFile.length; i++) {
             if (contentFile[i - 1] == contentFile[i]) {
-                k++;
-                kper = contentFile[i];
-                System.out.print(" "+k+" ");
-            } else if (k > max) {
-                max = k;
-                per = kper;
+                counter++;
+                currentElement = contentFile[i];
+                System.out.print(" "+counter+" ");
+            } else if (counter > maxSequence) {
+                maxSequence = counter;
+                interrupt = currentElement;
+
             } else if (contentFile[i - 1] != contentFile[i]) {
-                k = 1;
+                counter = 1;
             }
         }
         notify();
-        System.out.println("Mximum: " + max + "  " + per);
+        System.out.println("Mximum: " + maxSequence + "  " + interrupt);
     }
 }
